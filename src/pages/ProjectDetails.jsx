@@ -96,7 +96,7 @@ const ProjectDetails = () => {
 
         {/* Header */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-white/5 mb-8">
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-6">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{project.name || project.projectName}</h1>
                     <p className="text-gray-500 dark:text-gray-400 max-w-2xl">{project.description}</p>
@@ -111,35 +111,51 @@ const ProjectDetails = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Progress Bar */}
+            <div className="w-full">
+                <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Project Progress</span>
+                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{project.progress || 0}%</span>
+                </div>
+                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                    <div 
+                        className="bg-blue-600 h-3 rounded-full transition-all duration-700 ease-out"
+                        style={{ width: `${project.progress || 0}%` }}
+                    />
+                </div>
+            </div>
         </div>
 
         {/* Tabs & Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column: Details & Stages */}
             <div className="lg:col-span-2 space-y-8">
-                {/* Team Section */}
+                {/* Team Section - Hide for Client if strict, but usually visible. Keeping it safe with check */}
+                {project.teamMembers && (
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-white/5">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                         <User size={20} className="text-purple-500" /> Team Members
                     </h3>
                     <div className="flex flex-wrap gap-4">
-                        {project.teamMembers && project.teamMembers.length > 0 ? (
+                        {project.teamMembers.length > 0 ? (
                             project.teamMembers.map((member) => (
-                                <div key={member._id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-white/5">
+                                <div key={member._id || member} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-white/5">
                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                                        {member.name.charAt(0)}
+                                        {(member.name || "U").charAt(0)}
                                     </div>
                                     <div>
-                                        <p className="font-medium text-gray-900 dark:text-white">{member.name}</p>
+                                        <p className="font-medium text-gray-900 dark:text-white">{member.name || "User"}</p>
                                         <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">{member.role}</p>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-400 italic">No team members assigned.</p>
+                            <p className="text-gray-400 italic">No team members visible.</p>
                         )}
                     </div>
                 </div>
+                )}
                 
                 {/* Notes Section */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-white/5">

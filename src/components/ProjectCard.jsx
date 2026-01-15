@@ -40,6 +40,20 @@ const ProjectCard = ({ project, index = 0, onEdit }) => {
           {project.description}
         </p>
       </div>
+      
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Progress</span>
+            <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{project.progress || 0}%</span>
+        </div>
+        <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+            <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${project.progress || 0}%` }}
+            />
+        </div>
+      </div>
 
       {/* Footer: Team & Actions */}
       <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
