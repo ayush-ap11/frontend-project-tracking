@@ -1,36 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, UserPlus, Trash2 } from "lucide-react";
 
-const CreateProjectModal = ({ isOpen, onClose, onSubmit, clients = [], teamMembers = [] }) => {
+const CreateProjectModal = ({ isOpen, onClose, onSubmit, clients = [], teamMembers = [], initialData = null, isSubmitting = false }) => {
   const [formData, setFormData] = useState({
     projectName: "",
     description: "",
-    status: "NOT_STARTED", // Default as per model
+    status: "NOT_STARTED", 
     startDate: new Date().toISOString().split('T')[0],
     expectedEndDate: "",
     clientId: "",
-    teamMembers: [], // Array of IDs
+    teamMembers: [],
   });
+
+  useEffect(() => {
+    if (initialData) {
+        setFormData({
+            projectName: initialData.projectName || initialData.name || "",
+            description: initialData.description || "",
+            status: initialData.status || "NOT_STARTED",
+            startDate: initialData.startDate ? new Date(initialData.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            expectedEndDate: initialData.expectedEndDate ? new Date(initialData.expectedEndDate).toISOString().split('T')[0] : "",
+            clientId: initialData.clientId?._id || initialData.clientId || "",
+            teamMembers: initialData.teamMembers ? initialData.teamMembers.map(m => m._id || m) : [],
+        });
+    } else {
+        // Reset for create mode
+        setFormData({
+            projectName: "",
+            description: "",
+            status: "NOT_STARTED",
+            startDate: new Date().toISOString().split('T')[0],
+            expectedEndDate: "",
+            clientId: "",
+            teamMembers: [],
+        });
+    }
+  }, [initialData, isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Basic validation
     if (!formData.clientId) {
         alert("Please assign a client.");
         return;
     }
     onSubmit(formData);
-    // Reset form
-    setFormData({
-        projectName: "",
-        description: "",
-        status: "NOT_STARTED",
-        startDate: new Date().toISOString().split('T')[0],
-        expectedEndDate: "",
-        clientId: "",
-        teamMembers: [],
-    });
+    // Don't reset if it's an edit, modal might close or data refresh
+    if (!initialData) {
+        setFormData({
+            projectName: "",
+            description: "",
+            status: "NOT_STARTED",
+            startDate: new Date().toISOString().split('T')[0],
+            expectedEndDate: "",
+            clientId: "",
+            teamMembers: [],
+        });
+    }
   };
 
   const addTeamMember = (memberId) => {
@@ -49,8 +75,8 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, clients = [], teamMembe
     });
   };
 
-  // Filter available members (not yet selected)
   const availableMembers = teamMembers.filter(m => !formData.teamMembers.includes(m._id));
+  const isEditMode = !!initialData;
 
   if (!isOpen) return null;
 
@@ -78,8 +104,12 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, clients = [], teamMembe
             <X size={24} className="text-gray-500 dark:text-gray-400" />
           </button>
 
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Create New Project</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-8">Fill in the details to kickstart a new initiative.</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            {isEditMode ? "Update Project" : "Create New Project"}
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">
+            {isEditMode ? "Update the project details below." : "Fill in the details to kickstart a new initiative."}
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Project Details */}
@@ -107,6 +137,9 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, clients = [], teamMembe
                         <option value="ON_TRACK">On Track</option>
                         <option value="DELAYED">Delayed</option>
                         <option value="COMPLETED">Completed</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="ON_HOLD">On Hold</option>
+                        <option value="PLANNED">Planned</option>
                     </select>
                 </div>
             </div>
@@ -171,7 +204,7 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, clients = [], teamMembe
                          const member = teamMembers.find(m => m._id === memberId);
                          return (
                              <div key={memberId} className="group relative flex items-center gap-2 pl-3 pr-8 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium">
-                                 <span>{member?.name}</span>
+                                 <span>{member?.name || "Unknown"}</span>
                                  <button
                                     type="button"
                                     onClick={() => removeTeamMember(memberId)}
@@ -220,9 +253,17 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, clients = [], teamMembe
               </button>
               <button
                 type="submit"
-                className="px-8 py-2.5 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg hover:shadow-blue-600/20 transition-all font-semibold"
+                disabled={isSubmitting}
+                className="px-8 py-2.5 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg hover:shadow-blue-600/20 transition-all font-semibold disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                Create Project
+                {isSubmitting ? (
+                    <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Processing...
+                    </>
+                ) : (
+                    isEditMode ? "Update Project" : "Create Project"
+                )}
               </button>
             </div>
           </form>

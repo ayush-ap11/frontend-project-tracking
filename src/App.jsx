@@ -9,6 +9,8 @@ import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import ClientDashboard from "./pages/dashboards/ClientDashboard";
 import TeamDashboard from "./pages/dashboards/TeamDashboard";
 
+import ProjectDetails from "./pages/ProjectDetails";
+
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -43,6 +45,12 @@ function App() {
             <Route path="/team/dashboard" element={
               <ProtectedRoute allowedRoles={['TEAM']}>
                 <TeamDashboard />
+              </ProtectedRoute>
+            } />
+            {/* Project Details */}
+            <Route path="/projects/:id" element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'TEAM', 'CLIENT']}>
+                <ProjectDetails />
               </ProtectedRoute>
             } />
           </Routes>
