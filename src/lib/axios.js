@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const defaultBackendUrl = "http://localhost:8080";
+const defaultBackendUrl = "https://backend-project-tracking.onrender.com";
 const backendBaseUrl = (
   import.meta.env?.VITE_BACKEND_URL || defaultBackendUrl
 ).replace(/\/$/, "");
