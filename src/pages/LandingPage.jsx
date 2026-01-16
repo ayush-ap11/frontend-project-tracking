@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import Navbar from "../components/Navbar";
 
@@ -16,7 +16,7 @@ const LandingPage = () => {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl -z-10 animate-pulse delay-1000" />
 
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -27,19 +27,19 @@ const LandingPage = () => {
                 With Confidence
               </span>
             </h1>
-          </motion.div>
+          </Motion.div>
 
-          <motion.p
+          <Motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Manage project stages, track team progress, and hit delivery dates 
+            Manage project stages, track team progress, and hit delivery dates
             with our modern, real-time dashboard.
-          </motion.p>
+          </Motion.p>
 
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -57,31 +57,48 @@ const LandingPage = () => {
             >
               Log In
             </Link>
-          </motion.div>
+          </Motion.div>
 
           {/* Features Grid */}
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20"
           >
             {[
-              "Real-time Progress Updates",
-              "Team Collaboration",
-              "Deadline Tracking",
-            ].map((feature, index) => (
+              {
+                title: "Real-time Progress Updates",
+                description:
+                  "Understand every project's momentum instantly with live stage tracking and automated status highlights.",
+              },
+              {
+                title: "Team Collaboration",
+                description:
+                  "Keep stakeholders aligned with shared timelines, ownership visibility, and context-rich activity logs.",
+              },
+              {
+                title: "Deadline Confidence",
+                description:
+                  "Forecast delivery with clarity thanks to milestone alerts, blocked stage signals, and burn-down insights.",
+              },
+            ].map(({ title, description }, index) => (
               <div
                 key={index}
-                className="p-6 rounded-2xl bg-white/40 dark:bg-white/5 backdrop-blur-md border border-white/50 dark:border-white/10 shadow-lg"
+                className="p-4 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-md border border-white/50 dark:border-white/10 shadow-lg"
               >
-                <div className="flex items-center justify-center gap-3 text-gray-800 dark:text-gray-200 font-medium">
-                  <CheckCircle2 className="text-blue-500" />
-                  {feature}
+                <div className="flex items-start gap-3 text-gray-800 dark:text-gray-200">
+                  <CheckCircle2 className="mt-1 text-blue-500" />
+                  <div>
+                    <p className="font-semibold text-lg mb-2">{title}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                      {description}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
-          </motion.div>
+          </Motion.div>
         </div>
       </main>
     </div>

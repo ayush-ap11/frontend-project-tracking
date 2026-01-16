@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 const StatsCard = ({ title, value, icon: Icon, color = "blue", delay = 0 }) => {
   const colorClasses = {
@@ -11,20 +11,24 @@ const StatsCard = ({ title, value, icon: Icon, color = "blue", delay = 0 }) => {
   };
 
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
       className="p-6 rounded-2xl bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-lg"
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-gray-500 dark:text-gray-400 font-medium text-sm">{title}</h3>
+        <h3 className="text-gray-500 dark:text-gray-400 font-medium text-sm">
+          {title}
+        </h3>
         <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
           {Icon && <Icon size={20} />}
         </div>
       </div>
-      <div className="text-3xl font-bold text-gray-900 dark:text-white">{value}</div>
-    </motion.div>
+      <div className="text-3xl font-bold text-gray-900 dark:text-white">
+        {value}
+      </div>
+    </Motion.div>
   );
 };
 

@@ -1,277 +1,111 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, UserPlus, Trash2 } from "lucide-react";
+import React from "react";
+import { motion as Motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import useProjectForm from "../hooks/useProjectForm";
+import ProjectNameStatusFields from "./createProjectModal/ProjectNameStatusFields";
+import DescriptionField from "./createProjectModal/DescriptionField";
+import ProgressSlider from "./createProjectModal/ProgressSlider";
+import DateFields from "./createProjectModal/DateFields";
+import ClientSelect from "./createProjectModal/ClientSelect";
+import TeamMembersSection from "./createProjectModal/TeamMembersSection";
 
-const CreateProjectModal = ({ isOpen, onClose, onSubmit, clients = [], teamMembers = [], initialData = null, isSubmitting = false }) => {
+const CreateProjectModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  clients = [],
+  teamMembers = [],
+  initialData = null,
+  isSubmitting = false,
+}) => {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === "ADMIN";
 
-  const [formData, setFormData] = useState({
-    projectName: "",
-    description: "",
-    status: "NOT_STARTED", 
-    startDate: new Date().toISOString().split('T')[0],
-    expectedEndDate: "",
-    clientId: "",
-    teamMembers: [],
-    progress: 0,
-  });
+  const {
+    formData,
+    handleFieldChange,
+    addTeamMember,
+    removeTeamMember,
+    submitForm,
+    availableMembers,
+    isEditMode,
+  } = useProjectForm({ initialData, isAdmin, isOpen, onSubmit, teamMembers });
 
-  useEffect(() => {
-    if (initialData) {
-        setFormData({
-            projectName: initialData.projectName || initialData.name || "",
-            description: initialData.description || "",
-            status: initialData.status || "NOT_STARTED",
-            startDate: initialData.startDate ? new Date(initialData.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-            expectedEndDate: initialData.expectedEndDate ? new Date(initialData.expectedEndDate).toISOString().split('T')[0] : "",
-            clientId: initialData.clientId?._id || initialData.clientId || "",
-            teamMembers: initialData.teamMembers ? initialData.teamMembers.map(m => m._id || m) : [],
-            progress: initialData.progress || 0,
-        });
-    } else {
-        // Reset for create mode
-        setFormData({
-            projectName: "",
-            description: "",
-            status: "NOT_STARTED",
-            startDate: new Date().toISOString().split('T')[0],
-            expectedEndDate: "",
-            clientId: "",
-            teamMembers: [],
-            progress: 0,
-        });
-    }
-  }, [initialData, isOpen]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (isAdmin && !formData.clientId) {
-        alert("Please assign a client.");
-        return;
-    }
-    onSubmit(formData);
-    // Don't reset if it's an edit, modal might close or data refresh
-    if (!initialData) {
-        setFormData({
-            projectName: "",
-            description: "",
-            status: "NOT_STARTED",
-            startDate: new Date().toISOString().split('T')[0],
-            expectedEndDate: "",
-            clientId: "",
-            teamMembers: [],
-        });
-    }
-  };
-
-  const addTeamMember = (memberId) => {
-    if (!formData.teamMembers.includes(memberId)) {
-        setFormData({
-            ...formData,
-            teamMembers: [...formData.teamMembers, memberId]
-        });
-    }
-  };
-
-  const removeTeamMember = (memberId) => {
-    setFormData({
-        ...formData,
-        teamMembers: formData.teamMembers.filter(id => id !== memberId)
-    });
-  };
-
-  const availableMembers = teamMembers.filter(m => !formData.teamMembers.includes(m._id));
-  const isEditMode = !!initialData;
-
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={onClose}
+        <Motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={onClose}
         />
-        
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 30 }}
-            className="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-white/10 max-h-[90vh] overflow-y-auto"
+
+        <Motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 30 }}
+          className="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-white/10 max-h-[90vh] overflow-y-auto"
         >
-            <button
+          <button
             onClick={onClose}
             className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-            >
+          >
             <X size={24} className="text-gray-500 dark:text-gray-400" />
-            </button>
+          </button>
 
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {isEditMode ? "Update Project" : "Create New Project"}
-            </h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-8">
-            {isEditMode ? "Update the project details below." : "Fill in the details to kickstart a new initiative."}
-            </p>
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">
+            {isEditMode
+              ? "Update the project details below."
+              : "Fill in the details to kickstart a new initiative."}
+          </p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Project Details */}
-            <div className={`grid grid-cols-1 ${isAdmin ? 'md:grid-cols-2' : ''} gap-6`}>
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Project Name</label>
-                    <input
-                        type="text"
-                        required
-                        value={formData.projectName}
-                        onChange={(e) => setFormData({...formData, projectName: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all"
-                        placeholder="e.g. Mobile App Development"
-                    />
-                </div>
-                {isAdmin && (
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Status</label>
-                        <select
-                            value={formData.status}
-                            onChange={(e) => setFormData({...formData, status: e.target.value})}
-                            className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all"
-                        >
-                            <option value="NOT_STARTED">Not Started</option>
-                            <option value="IN_PROGRESS">In Progress</option>
-                            <option value="ON_TRACK">On Track</option>
-                            <option value="DELAYED">Delayed</option>
-                            <option value="COMPLETED">Completed</option>
-                            <option value="ACTIVE">Active</option>
-                            <option value="ON_HOLD">On Hold</option>
-                            <option value="PLANNED">Planned</option>
-                        </select>
-                    </div>
-                )}
-            </div>
+          <form onSubmit={submitForm} className="space-y-6">
+            <ProjectNameStatusFields
+              formData={formData}
+              onChange={handleFieldChange}
+              isAdmin={isAdmin}
+            />
 
-            <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description</label>
-                <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white resize-none h-32 transition-all"
-                    placeholder="Describe the project scope..."
-                />
-            </div>
+            <DescriptionField
+              value={formData.description}
+              onChange={(value) => handleFieldChange("description", value)}
+            />
 
-            {/* Progress (Visible to Admin & Team) */}
-            <div>
-                 <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Progress (Timeline)</label>
-                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{formData.progress || 0}%</span>
-                 </div>
-                 <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={formData.progress || 0}
-                    onChange={(e) => setFormData({...formData, progress: parseInt(e.target.value)})}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600"
-                 />
-            </div>
+            <ProgressSlider
+              value={formData.progress}
+              onChange={(value) => handleFieldChange("progress", value)}
+            />
 
-            {/* Dates (Admin only) */}
             {isAdmin && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Start Date</label>
-                        <input
-                            type="date"
-                            required
-                            value={formData.startDate}
-                            onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                            className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all"
-                        />
-                    </div>
-                        <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Expected End Date</label>
-                        <input
-                            type="date"
-                            required
-                            value={formData.expectedEndDate}
-                            onChange={(e) => setFormData({...formData, expectedEndDate: e.target.value})}
-                            className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all"
-                        />
-                    </div>
-                </div>
+              <DateFields formData={formData} onChange={handleFieldChange} />
             )}
 
-            {/* Client Assignment (Admin only) */}
             {isAdmin && (
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Assign Client</label>
-                    <select
-                        value={formData.clientId}
-                        onChange={(e) => setFormData({...formData, clientId: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all"
-                    >
-                        <option value="">Select a Client</option>
-                        {clients.map(client => (
-                            <option key={client._id} value={client._id}>{client.name} ({client.email})</option>
-                        ))}
-                    </select>
-                </div>
+              <ClientSelect
+                clients={clients}
+                value={formData.clientId}
+                onChange={(value) => handleFieldChange("clientId", value)}
+              />
             )}
 
-            {/* Team Members Assignment (Admin only) */}
             {isAdmin && (
-                <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Assign Team Members</label>
-                        
-                        {/* Assigned List */}
-                        <div className="flex flex-wrap gap-2 mb-4 min-h-[40px] p-2 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10">
-                            {formData.teamMembers.length === 0 && <span className="text-gray-400 text-sm p-1">No members assigned yet.</span>}
-                            {formData.teamMembers.map(memberId => {
-                                const member = teamMembers.find(m => m._id === memberId);
-                                return (
-                                    <div key={memberId} className="group relative flex items-center gap-2 pl-3 pr-8 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium">
-                                        <span>{member?.name || "Unknown"}</span>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeTeamMember(memberId)}
-                                            className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                                        >
-                                            <X size={12} />
-                                        </button>
-                                    </div>
-                                )
-                            })}
-                        </div>
-
-                        {/* Available List */}
-                        {availableMembers.length > 0 && (
-                            <div className="space-y-2">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">Available Members</p>
-                            <div className="grid grid-cols-2 gap-2">
-                                {availableMembers.map(member => (
-                                    <button
-                                        key={member._id}
-                                        type="button"
-                                        onClick={() => addTeamMember(member._id)}
-                                        className="flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left"
-                                    >
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{member.name}</p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-500">{member.email}</p>
-                                        </div>
-                                        <div className="p-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400">
-                                            <Plus size={16} />
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                            </div>
-                        )}
-                </div>
+              <TeamMembersSection
+                selectedMembers={formData.teamMembers}
+                teamMembers={teamMembers}
+                availableMembers={availableMembers}
+                onAddMember={addTeamMember}
+                onRemoveMember={removeTeamMember}
+              />
             )}
 
             <div className="pt-6 border-t border-gray-100 dark:border-white/10 flex justify-end gap-3">
@@ -288,17 +122,19 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, clients = [], teamMembe
                 className="px-8 py-2.5 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg hover:shadow-blue-600/20 transition-all font-semibold disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isSubmitting ? (
-                    <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Processing...
-                    </>
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Processing...
+                  </>
+                ) : isEditMode ? (
+                  "Update Project"
                 ) : (
-                    isEditMode ? "Update Project" : "Create Project"
+                  "Create Project"
                 )}
               </button>
             </div>
           </form>
-        </motion.div>
+        </Motion.div>
       </div>
     </AnimatePresence>
   );

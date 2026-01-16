@@ -1,38 +1,43 @@
 import { useState, useCallback, useEffect } from "react";
-import api from "../lib/axios";
+import { fetchClientDashboard } from "../services/dashboardService";
+import { fetchProjects } from "../services/projectService";
 
 export const useClientData = () => {
-    const [data, setData] = useState({
-        stats: null,
-        projects: []
-    });
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [data, setData] = useState({
+    stats: null,
+    projects: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const fetchData = useCallback(async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const [statsRes, projectsRes] = await Promise.all([
-                api.get("/dashboard/client"),
-                api.get("/projects") // Backend filters for client automatically
-            ]);
-            
-            setData({
-                stats: statsRes.data,
-                projects: projectsRes.data
-            });
-        } catch (err) {
-            console.error("Failed to fetch client data:", err);
-            setError(err.response?.data?.message || err.message || "Failed to load dashboard data");
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [statsData, projectsData] = await Promise.all([
+        fetchClientDashboard(),
+        fetchProjects(),
+      ]);
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+      setData({
+        stats: statsData,
+        projects: projectsData,
+      });
+    } catch (err) {
+      console.error("Failed to fetch client data:", err);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to load dashboard data"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    return { ...data, loading, error, refetch: fetchData };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { ...data, loading, error, refetch: fetchData };
 };

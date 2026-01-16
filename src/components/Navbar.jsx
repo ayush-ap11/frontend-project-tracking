@@ -1,27 +1,29 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, LayoutDashboard } from "lucide-react";
-import { useTheme } from "../context/ThemeContext";
+import { LayoutDashboard } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { cn } from "../lib/utils";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 const Navbar = () => {
-  const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
 
   const getDashboardLink = () => {
     if (!user) return "/";
     switch (user.role) {
-      case "ADMIN": return "/admin/dashboard";
-      case "CLIENT": return "/client/dashboard";
-      case "TEAM": return "/team/dashboard";
-      default: return "/";
+      case "ADMIN":
+        return "/admin/dashboard";
+      case "CLIENT":
+        return "/client/dashboard";
+      case "TEAM":
+        return "/team/dashboard";
+      default:
+        return "/";
     }
   };
 
   return (
-    <motion.nav
+    <Motion.nav
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -31,7 +33,10 @@ const Navbar = () => {
       )}
     >
       {/* Logo */}
-      <Link to={user ? getDashboardLink() : "/"} className="flex items-center gap-2 group">
+      <Link
+        to={user ? getDashboardLink() : "/"}
+        className="flex items-center gap-2 group"
+      >
         <div className="p-2 rounded-xl bg-blue-600/20 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
           <LayoutDashboard size={24} />
         </div>
@@ -42,22 +47,13 @@ const Navbar = () => {
 
       {/* Right Actions */}
       <div className="flex items-center gap-4">
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300"
-          aria-label="Toggle Theme"
-        >
-          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
-
         {/* Auth Buttons */}
         {user ? (
           <div className="flex items-center gap-4">
             <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
               {user.name}
             </span>
-             <Link
+            <Link
               to={getDashboardLink()}
               className="hidden sm:block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
@@ -87,7 +83,7 @@ const Navbar = () => {
           </div>
         )}
       </div>
-    </motion.nav>
+    </Motion.nav>
   );
 };
 

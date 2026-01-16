@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
-import api from "../lib/axios";
+import { fetchAdminDashboard } from "../services/dashboardService";
+import { fetchProjects } from "../services/projectService";
+import { fetchUsers } from "../services/userService";
 
 export const useAdminData = () => {
   const [data, setData] = useState({
@@ -15,23 +17,28 @@ export const useAdminData = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const [statsRes, projectsRes, clientsRes, teamRes] = await Promise.all([
-        api.get("/dashboard/admin"),
-        api.get("/projects"),
-        api.get("/auth/users?role=CLIENT"),
-        api.get("/auth/users?role=TEAM"),
-      ]);
+
+      const [statsData, projectsData, clientsData, teamData] =
+        await Promise.all([
+          fetchAdminDashboard(),
+          fetchProjects(),
+          fetchUsers("CLIENT"),
+          fetchUsers("TEAM"),
+        ]);
 
       setData({
-        stats: statsRes.data,
-        projects: projectsRes.data,
-        clients: clientsRes.data,
-        teamMembers: teamRes.data,
+        stats: statsData,
+        projects: projectsData,
+        clients: clientsData,
+        teamMembers: teamData,
       });
     } catch (err) {
       console.error("Failed to fetch admin data:", err);
-      setError(err.response?.data?.message || err.message || "Failed to load dashboard data");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to load dashboard data"
+      );
     } finally {
       setLoading(false);
     }

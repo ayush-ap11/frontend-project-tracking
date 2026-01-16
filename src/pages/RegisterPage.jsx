@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 
 const RegisterPage = () => {
@@ -37,15 +37,19 @@ const RegisterPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-950 dark:via-gray-900 dark:to-slate-900 flex items-center justify-center p-4">
       <Navbar />
-      
-      <motion.div
+
+      <Motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
         className="w-full max-w-md p-8 rounded-2xl bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-2xl mt-20"
       >
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">Create Account</h2>
-        <p className="text-center text-gray-600 dark:text-gray-400 mb-8">Join to track your projects</p>
+        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
+          Create Account
+        </h2>
+        <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
+          Join to track your projects
+        </p>
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm text-center">
@@ -55,7 +59,9 @@ const RegisterPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Full Name
+            </label>
             <input
               type="text"
               name="name"
@@ -68,7 +74,9 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email Address
+            </label>
             <input
               type="email"
               name="email"
@@ -81,7 +89,9 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Password
+            </label>
             <input
               type="password"
               name="password"
@@ -94,25 +104,35 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Role
+            </label>
             <select
               name="role"
               value={formData.role}
               onChange={handleChange}
               className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white cursor-pointer"
             >
-              <option value="CLIENT" className="dark:bg-gray-800">Client</option>
-              <option value="TEAM" className="dark:bg-gray-800">Team Member</option>
-              <option value="ADMIN" className="dark:bg-gray-800">Admin</option>
+              <option value="CLIENT" className="dark:bg-gray-800">
+                Client
+              </option>
+              <option value="TEAM" className="dark:bg-gray-800">
+                Team Member
+              </option>
+              <option value="ADMIN" className="dark:bg-gray-800">
+                Admin
+              </option>
             </select>
           </div>
 
           {formData.role === "TEAM" && (
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
             >
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Experience (Years)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Experience (Years)
+              </label>
               <input
                 type="number"
                 name="experienceYears"
@@ -122,7 +142,7 @@ const RegisterPage = () => {
                 className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
                 placeholder="e.g. 5"
               />
-            </motion.div>
+            </Motion.div>
           )}
 
           <button
@@ -135,11 +155,14 @@ const RegisterPage = () => {
 
         <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+          <Link
+            to="/login"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+          >
             Sign in
           </Link>
         </div>
-      </motion.div>
+      </Motion.div>
     </div>
   );
 };

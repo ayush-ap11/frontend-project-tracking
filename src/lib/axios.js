@@ -1,9 +1,13 @@
 import axios from "axios";
 
-// Create axios instance
+const defaultBackendUrl = "http://localhost:8080";
+const backendBaseUrl = (
+  import.meta.env?.VITE_BACKEND_URL || defaultBackendUrl
+).replace(/\/$/, "");
+
 const api = axios.create({
-  baseURL: "http://localhost:8080/api", // Updated to match backend port
-  withCredentials: true, // Important for cookies
+  baseURL: `${backendBaseUrl}/api`,
+  withCredentials: true,
 });
 
 export default api;

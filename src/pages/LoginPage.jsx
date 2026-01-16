@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 
 const LoginPage = () => {
@@ -29,15 +29,19 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-950 dark:via-gray-900 dark:to-slate-900 flex items-center justify-center p-4">
       <Navbar />
-      
-      <motion.div
+
+      <Motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
         className="w-full max-w-md p-8 rounded-2xl bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-2xl"
       >
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">Welcome Back</h2>
-        <p className="text-center text-gray-600 dark:text-gray-400 mb-8">Sign in to access your dashboard</p>
+        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
+          Welcome Back
+        </h2>
+        <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
+          Sign in to access your dashboard
+        </p>
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm text-center">
@@ -47,7 +51,9 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Email Address
+            </label>
             <input
               type="email"
               required
@@ -59,7 +65,9 @@ const LoginPage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Password
+            </label>
             <input
               type="password"
               required
@@ -80,11 +88,14 @@ const LoginPage = () => {
 
         <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+          <Link
+            to="/signup"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+          >
             Sign up
           </Link>
         </div>
-      </motion.div>
+      </Motion.div>
     </div>
   );
 };
